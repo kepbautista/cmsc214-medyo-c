@@ -1,0 +1,25 @@
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\bin\Debug\cmsc214project.exe
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\bin\Debug\cmsc214project.pdb
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\cmsc214project.Form1.resources
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\cmsc214project.Properties.Resources.resources
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\cmsc214project.exe
+C:\Documents and Settings\jasyb\Local Settings\Application Data\Temporary Projects\cmsc214project\obj\x86\Debug\cmsc214project.pdb
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.exe
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.pdb
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\bin\Debug\cmsc214project.exe
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\bin\Debug\cmsc214project.pdb
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Form1.resources
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Properties.Resources.resources
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\jasyb\my documents\visual studio 2010\Projects\cmsc214project\cmsc214project\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.exe
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.pdb
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\bin\Debug\cmsc214project.exe
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\bin\Debug\cmsc214project.pdb
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Form1.resources
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Properties.Resources.resources
+C:\Users\tin bautista\Desktop\cmsc214project\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.csproj.GenerateResource.Cache
