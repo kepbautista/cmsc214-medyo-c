@@ -381,7 +381,7 @@ namespace cmsc214project
             }
         }
 
-        private void evaluate_code()
+        private void evaluate_code(String[] str)
         {
             
         }
