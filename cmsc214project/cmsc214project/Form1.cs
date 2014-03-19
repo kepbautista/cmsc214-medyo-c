@@ -380,10 +380,53 @@ namespace cmsc214project
                 return false;
             }
         }
-
-        private void evaluate_code(String[] str)
+		
+        private void evaluate_code(String[] cmd)
         {
-            
+			//initialize stack
+            Stack<String> s = new Stack<String>();
+            Double result = 0;
+
+			/*accumulators*/
+            Double acc = 0.0;//store arithmetic values here
+			Double acx = 1.0;
+			
+			String ex="";
+            int ctr = 0;
+			
+			while(ctr<cmd.Length){
+				/**
+					fetch part
+				**/
+				String i = cmd[ctr];
+				
+				/**
+					analyze part
+					habang hindi pa command... (variable or literal)
+					get operands and operators
+				**/
+                while(true){
+                    //check if input is a number
+                    if (Double.TryParse(i, out result))
+                    {
+                    }
+                    //input is not a number
+                    else
+                    {
+                    }
+
+                    //get next lexeme
+                    i = cmd[ctr++];
+                }
+
+                /**
+                 * execute part
+                 * Check what kind of instruction
+                 **/
+
+                /** Arithmetic Operations**/
+
+			}
         }
     }
 }
