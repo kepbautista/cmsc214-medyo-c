@@ -56,7 +56,8 @@ namespace cmsc214project
                 tokens[i] = tokens[i].Replace('\t', ' ');       
             }
 
-            String[] test_in = {"4","5","*","6","*","IPAKITA"};
+            String[] test_in = {"4","5","*","6","*","IPAKITA",
+                                "4","5","-","IPAKITANA"};
 
             lexer();
             analyze();
@@ -427,7 +428,7 @@ namespace cmsc214project
                         s.Push(result);
                     }
                     
-                        //check if input is a string literal
+                    //check if input is a string literal
                     /*else if(){
                     }*/
 
@@ -459,9 +460,15 @@ namespace cmsc214project
 
                 //subtraction operator
                 else if(ex=="-"){
-                    onAcc = true;//turn on accumulator
                     while(s.Count!=0){
-                        acc -= (Double)s.Pop();
+                        if (onAcc)
+                            acc -= (Double)s.Pop();
+                        //it is the very first operand
+                        else
+                        {
+                            acc = (Double)s.Pop();
+                            onAcc = true;//turn on accumulator
+                        }
                     }
                 }
 
@@ -478,6 +485,7 @@ namespace cmsc214project
                     {
                         acc *= acx;
                     }
+                    //it is the very first operand
                     else
                     {
                         onAcc = true;//turn on accumulator
@@ -500,6 +508,7 @@ namespace cmsc214project
                     {
                         acc *= acx;
                     }
+                    //it is the very first operand
                     else
                     {
                         onAcc = true;//turn on accumulator
@@ -522,6 +531,7 @@ namespace cmsc214project
                     {
                         acc *= acx;
                     }
+                    //it is the very first operand
                     else
                     {
                         onAcc = true;//turn on accumulator
@@ -546,7 +556,7 @@ namespace cmsc214project
                 else if (ex == "IPAKITANA")
                 {
                     //for printing arithmetic values with newline
-                    output.Text += (acc + Environment.NewLine);
+                    output.Text += (Environment.NewLine + acc);
 
                     //clear arithmetic accumulators
                     clearAccumuators();
