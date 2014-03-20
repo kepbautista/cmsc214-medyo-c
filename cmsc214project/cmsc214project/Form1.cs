@@ -56,7 +56,7 @@ namespace cmsc214project
                 tokens[i] = tokens[i].Replace('\t', ' ');       
             }
 
-            String[] test_in = {"4","5","+","6","*","IPAKITA"};
+            String[] test_in = {"4","5","*","6","*","IPAKITA"};
 
             lexer();
             analyze();
@@ -483,6 +483,8 @@ namespace cmsc214project
                         onAcc = true;//turn on accumulator
                         acc = acx;
                     }
+
+                    acx = 1;
                 }
 
                 //division operator
@@ -503,6 +505,8 @@ namespace cmsc214project
                         onAcc = true;//turn on accumulator
                         acc = acx;
                     }
+
+                    acx = 1;
                 }
 
                 //modulo operator
@@ -523,6 +527,8 @@ namespace cmsc214project
                         onAcc = true;//turn on accumulator
                         acc = acx;
                     }
+
+                    acx = 1;
                 }
 
                 /** I/O Functions**/
