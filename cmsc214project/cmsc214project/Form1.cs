@@ -207,11 +207,11 @@ namespace cmsc214project
         {
             if (checkVar())
             {
-                output.AppendText("Variable Declaration\n");
+                output.AppendText("Variable Declaration"+Environment.NewLine);
             }
             else
             {
-                displayError("Imbalidong salita\n");
+                displayError("Imbalidong salita"+Environment.NewLine);
             }
         }
 
@@ -272,11 +272,11 @@ namespace cmsc214project
                         {
                             if (line != cLine)
                             {
-                                displayError("Nawawala o Inaasahang pangalan ng baryante\n");
+                                displayError("Nawawala o Inaasahang pangalan ng baryante"+Environment.NewLine);
                             }
                             else
                             {
-                                displayError("Magkasalungat na uri\n");
+                                displayError("Magkasalungat na uri"+Environment.NewLine);
                             }
                             
                         }
@@ -285,18 +285,18 @@ namespace cmsc214project
                     else
                     {
                         if(line!=cLine) return true;
-                        else displayError("Nawawala o Inaasahang AY\n");
+                        else displayError("Nawawala o Inaasahang AY"+Environment.NewLine);
                     }
                 }
                 else
                 {
                     if (line != cLine)
                     {
-                        displayError("Nawawala o Inaasahang pangalan ng baryante\n");
+                        displayError("Nawawala o Inaasahang pangalan ng baryante"+Environment.NewLine);
                     }
                     else if (!isVarName())
                     {
-                        displayError("Imbalidong pangalan ng baryante\n");
+                        displayError("Imbalidong pangalan ng baryante"+Environment.NewLine);
                     }
                     
                 }
