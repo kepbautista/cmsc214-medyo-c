@@ -458,7 +458,7 @@ namespace cmsc214project
                 }
 
                 //subtraction operator
-                if(ex=="-"){
+                else if(ex=="-"){
                     onAcc = true;//turn on accumulator
                     while(s.Count!=0){
                         acc -= (Double)s.Pop();
@@ -466,7 +466,7 @@ namespace cmsc214project
                 }
 
                 //multiplication operator
-                if (ex == "*")
+                else if (ex == "*")
                 {
                     while (s.Count != 0)
                     {
@@ -488,7 +488,7 @@ namespace cmsc214project
                 }
 
                 //division operator
-                if (ex == "/")
+                else if (ex == "/")
                 {
                     while (s.Count != 0)
                     {
@@ -510,7 +510,7 @@ namespace cmsc214project
                 }
 
                 //modulo operator
-                if (ex == "%")
+                else if (ex == "%")
                 {
                     while (s.Count != 0)
                     {
@@ -533,12 +533,22 @@ namespace cmsc214project
 
                 /** I/O Functions**/
                 //one-line printing function
-                if (ex == "IPAKITA")
+                else if (ex == "IPAKITA")
                 {
-                    //for printing arithmetic operators
+                    //for printing arithmetic values
                     output.Text += acc;
 
                     //clear artihmetic accumulators
+                    clearAccumuators();
+                }
+
+                //printing with newline function (System.out.println...)
+                else if (ex == "IPAKITANA")
+                {
+                    //for printing arithmetic values with newline
+                    output.Text += (acc + Environment.NewLine);
+
+                    //clear arithmetic accumulators
                     clearAccumuators();
                 }
 
