@@ -331,7 +331,7 @@ namespace cmsc214project
                         {
                             if (line != cLine)
                             {
-                                displayError("Nawawala o Inaasahang pangalan ng baryante");
+                                displayError("Nawawala o Inaasahang halaga ng baryante");
                             }
                             else
                             {

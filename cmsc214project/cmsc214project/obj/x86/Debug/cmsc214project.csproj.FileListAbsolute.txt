@@ -31,3 +31,11 @@ C:\Users\tin bautista\Documents\GitHub\cmsc214-medyo-c\cmsc214project\cmsc214pro
 C:\Users\tin bautista\Documents\GitHub\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Properties.Resources.resources
 C:\Users\tin bautista\Documents\GitHub\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.csproj.GenerateResource.Cache
 C:\Users\tin bautista\Documents\GitHub\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.csprojResolveAssemblyReference.cache
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.exe
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.pdb
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\bin\Debug\cmsc214project.exe
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\bin\Debug\cmsc214project.pdb
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.csprojResolveAssemblyReference.cache
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Form1.resources
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.Properties.Resources.resources
+C:\Users\MBBDR\Documents\cmsc214-medyo-c\cmsc214project\cmsc214project\obj\x86\Debug\cmsc214project.csproj.GenerateResource.Cache
