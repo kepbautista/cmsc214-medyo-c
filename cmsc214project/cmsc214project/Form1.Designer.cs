@@ -42,6 +42,7 @@
             this.code.Name = "code";
             this.code.Size = new System.Drawing.Size(486, 274);
             this.code.TabIndex = 0;
+            this.code.TextChanged += new System.EventHandler(this.code_TextChanged);
             // 
             // output
             // 

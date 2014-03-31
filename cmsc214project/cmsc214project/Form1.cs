@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace cmsc214project
 {
@@ -18,6 +19,9 @@ namespace cmsc214project
         int cLine;                      //current line in the tokens array
         Boolean error = false;          //error flag
 
+		//symbol table for storing values of variables
+		Hashtable symbolTable = new Hashtable(); 
+		
         /*
          * accumulators for arithmetic computations 
          * (similar to ax in assembly)
@@ -221,6 +225,28 @@ namespace cmsc214project
             }
         }
 
+        /* Print values of the hash table*/
+        private void printSymbolTable(){
+            foreach(DictionaryEntry entry in symbolTable){
+                String varname = (String)entry.Key;
+                output.AppendText(Environment.NewLine+varname+symbolTable[varname]);
+            }
+        }
+
+        /*
+         * Function for storing variables in the symbol table
+         */
+        private void storeVar(String cType, String cVar, String cValue)
+        {
+            //tuple for storing variable type and value
+            Tuple<string,string> value = new Tuple<string,string>(cType,cValue);
+            
+            //store variable name, type and value in the symbol table
+            symbolTable.Add(cVar,value);
+
+            printSymbolTable();
+        }
+
         /*
          * Checks if statement is variable declaration
          */
@@ -244,6 +270,7 @@ namespace cmsc214project
                     tempToken = cToken;
                     tempIndex = cIndex;
                     lexer();
+                    
                     if (line == cLine && cToken == "AY")
                     {
                         lexer();
@@ -251,7 +278,7 @@ namespace cmsc214project
                         float cValue2;
                         if (line == cLine && cType == dataTypes[0] && int.TryParse(cToken, out cValue1))
                         {
-                            //storeVar(cType, cVar, cValue1);
+                            //storeVar(cType, cVar, cToken);
                             //output.Text = cType+cVar+cValue1.ToString();
                             return true;
                         }
@@ -374,6 +401,7 @@ namespace cmsc214project
             error = false;
             output.Text = "";
             output.ForeColor = Color.White;
+            symbolTable.Clear();//reset hashtable
         }
 
         /*
@@ -626,5 +654,11 @@ namespace cmsc214project
                 ctr++;//move to the next lexeme
             }
         }
+
+        private void code_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }
