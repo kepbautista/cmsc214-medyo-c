@@ -18,6 +18,14 @@ namespace cmsc214project
         int cLine;                      //current line in the tokens array
         Boolean error = false;          //error flag
 
+        /*
+         * accumulators for arithmetic computations 
+         * (similar to ax in assembly)
+        */
+        Double acc = 0.0;//store arithmetic values here
+        Double acx = 1.0;
+        Boolean onAcc = false;//boolean value to determine if accumulator is being used
+
         public Form1()
         {
             InitializeComponent();
@@ -47,10 +55,13 @@ namespace cmsc214project
                 tokens[i] = tokens[i].Trim(' ', '\r', '\n', '\t');
                 tokens[i] = tokens[i].Replace('\t', ' ');       
             }
-            
+
+            String[] test_in = {"4","5","*","6","*","IPAKITA",
+                                "4","5","-","IPAKITANA"};
+
             lexer();
-            analyze();
-            //eval();
+            parse();
+            evaluate_code(test_in);
             //output.AppendText(cToken);
         }
 
@@ -193,15 +204,20 @@ namespace cmsc214project
             }
         }
 
-        private void analyze()
+        private void parse()
         {
-            if (checkVar())
+            if (cLine < tokens.Length && error == false)
             {
-                output.AppendText("Variable Declaration\n");
-            }
-            else
-            {
-                displayError("Imbalidong salita");
+                if (checkVar())
+                {
+                    output.AppendText("Variable Declaration\n");
+                    lexer();
+                    parse();
+                }
+                else
+                {
+                    displayError("Imbalidong salita");
+                }
             }
         }
 
@@ -214,6 +230,9 @@ namespace cmsc214project
             int line;
             string cType = "";
             string cVar = "";
+            string tempToken = "";
+            int tempIndex = 0;
+
             if (isDataType(cToken))
             {
                 cType =  cToken;
@@ -222,6 +241,8 @@ namespace cmsc214project
                 if (line==cLine && isVarName())
                 {
                     cVar = cToken;
+                    tempToken = cToken;
+                    tempIndex = cIndex;
                     lexer();
                     if (line == cLine && cToken == "AY")
                     {
@@ -274,7 +295,18 @@ namespace cmsc214project
                     }
                     else
                     {
-                        if(line!=cLine) return true;
+                        if (line != cLine)
+                        {
+                            if (cLine < tokens.Length)
+                            {
+                                //go back to the previous token
+                                cLine--;
+                                cToken = tempToken;
+                                cIndex = tempIndex;
+                                //output.AppendText(cLine+" "+cToken+" "+cIndex);
+                            }
+                            return true;
+                        }
                         else displayError("Nawawala o Inaasahang AY");
                     }
                 }
@@ -296,6 +328,42 @@ namespace cmsc214project
         }
 
         /*
+         * Checks if statement is a print statement
+         */
+        private Boolean checkPrint()
+        {
+            if (cToken == "IPAKITA" || cToken=="IPAKITANA")
+            {
+                lexer();
+                /*if (checkArith())
+                {
+                    return true;
+                }
+                else if (checkLogic())
+                {
+                    return true;
+                }*/
+            }
+            return false;
+        }
+
+        /*
+         * Checks if statement is a scan statement
+         */
+        private Boolean checkScan()
+        {
+            if (cToken == "IKUHA")
+            {
+                lexer();
+               /* if (checkVar())
+                {
+                    return true;
+                }*/
+            }
+            return false;
+        }
+
+        /*
          * Resets all the global variables
          */
         private void resetValues()
@@ -305,6 +373,7 @@ namespace cmsc214project
             cIndex = 0;
             error = false;
             output.Text = "";
+            output.ForeColor = Color.White;
         }
 
         /*
@@ -380,43 +449,56 @@ namespace cmsc214project
                 return false;
             }
         }
-		
+
+        private void clearAccumuators()
+        {
+            acc = 0.0;
+            acx = 1.0;
+            onAcc = false;
+        }
+
         private void evaluate_code(String[] cmd)
         {
-			//initialize stack
-            Stack<String> s = new Stack<String>();
+            //initialize stack
+            Stack<Object> s = new Stack<Object>();
             Double result = 0;
 
-			/*accumulators*/
-            Double acc = 0.0;//store arithmetic values here
-			Double acx = 1.0;
-			
-			String ex="";
+            String ex = "";
             int ctr = 0;
-			
-			while(ctr<cmd.Length){
-				/**
-					fetch part
-				**/
-				String i = cmd[ctr];
-				
-				/**
-					analyze part
-					habang hindi pa command... (variable or literal)
-					get operands and operators
-				**/
-                while(true){
+
+            while (ctr < cmd.Length)
+            {
+                /**
+                    fetch part
+                **/
+                String i = cmd[ctr];
+
+                /**
+                    analyze part
+                    habang hindi pa command... (variable or literal)
+                    get operands and operators
+                **/
+                while (true)
+                {
                     //check if input is a number
                     if (Double.TryParse(i, out result))
                     {
+                        s.Push(result);
                     }
-                    //input is not a number
+
+                    //check if input is a string literal
+                    /*else if(){
+                    }*/
+
+                    //input is a command
                     else
                     {
+                        ex = i;
+                        break;
                     }
 
                     //get next lexeme
-                    i = cmd[ctr++];
+                    i = cmd[++ctr];
                 }
 
                 /**
@@ -425,8 +507,124 @@ namespace cmsc214project
                  **/
 
                 /** Arithmetic Operations**/
+                //addition operator
+                if (ex == "+")
+                {
+                    onAcc = true;//turn on accumulator
+                    while (s.Count != 0)
+                    {
+                        acc += (Double)s.Pop();
+                    }
+                }
 
-			}
+                //subtraction operator
+                else if (ex == "-")
+                {
+                    while (s.Count != 0)
+                    {
+                        if (onAcc)
+                            acc -= (Double)s.Pop();
+                        //it is the very first operand
+                        else
+                        {
+                            acc = (Double)s.Pop();
+                            onAcc = true;//turn on accumulator
+                        }
+                    }
+                }
+
+                //multiplication operator
+                else if (ex == "*")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx *= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+
+                //division operator
+                else if (ex == "/")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx /= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+
+                //modulo operator
+                else if (ex == "%")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx %= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+
+                /** I/O Functions**/
+                //one-line printing function
+                else if (ex == "IPAKITA")
+                {
+                    //for printing arithmetic values
+                    output.Text += acc;
+
+                    //clear artihmetic accumulators
+                    clearAccumuators();
+                }
+
+                //printing with newline function (System.out.println...)
+                else if (ex == "IPAKITANA")
+                {
+                    //for printing arithmetic values with newline
+                    output.Text += (Environment.NewLine + acc);
+
+                    //clear arithmetic accumulators
+                    clearAccumuators();
+                }
+
+                ctr++;//move to the next lexeme
+            }
         }
     }
 }
