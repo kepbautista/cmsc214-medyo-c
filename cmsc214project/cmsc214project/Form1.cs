@@ -18,6 +18,9 @@ namespace cmsc214project
         int cIndex;                     //current index
         int cLine;                      //current line in the tokens array
         Boolean error = false;          //error flag
+        Boolean closed = false;
+
+        Form2 f2 = new Form2();
 
 		//symbol table for storing values of variables
 		Hashtable symbolTable = new Hashtable(); 
@@ -279,6 +282,16 @@ namespace cmsc214project
             symbolTable.Add(cVar,value);
 
             printSymbolTable();
+        }
+
+        /**Read input from user**/
+        private void readInput()
+        {
+            f2.ShowDialog();
+            String input = f2.textBox1.Text;
+
+            closed = f2.isClosed();
+            f2.textBox1.Text = "";//reset text
         }
 
         /*
