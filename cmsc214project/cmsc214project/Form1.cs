@@ -225,11 +225,30 @@ namespace cmsc214project
             }
         }
 
+         /*Get Type and Content of a certain variable*/
+        private Tuple<string,string> getVariableContent(String varname){
+            Tuple<string,string> t = (Tuple<string,string>)symbolTable[varname];
+            return t;
+        }
+
+        /*Check if variable already exists*/
+        private Boolean variableExists(String varname){
+            if(symbolTable.ContainsKey(varname))
+                return true;//variable exists
+            else return false;
+        }
+
         /* Print values of the hash table*/
         private void printSymbolTable(){
             foreach(DictionaryEntry entry in symbolTable){
                 String varname = (String)entry.Key;
-                output.AppendText(Environment.NewLine+varname+symbolTable[varname]);
+                Tuple<string,string> t = getVariableContent(varname);
+
+                String vartype = t.Item1;
+                String value = t.Item2;
+
+                output.AppendText(Environment.NewLine+"Variable Name: "+varname+" ");
+                output.AppendText("Type: "+vartype+" Value: "+t.Item2+Environment.NewLine);
             }
         }
 
@@ -270,7 +289,9 @@ namespace cmsc214project
                     tempToken = cToken;
                     tempIndex = cIndex;
                     lexer();
-                    
+
+                    storeVar(cType, cVar, "BETEL");
+
                     if (line == cLine && cToken == "AY")
                     {
                         lexer();
