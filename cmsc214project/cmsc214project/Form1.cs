@@ -41,6 +41,7 @@ namespace cmsc214project
         private void clear_Click(object sender, EventArgs e)
         {
             code.Text = "";
+            resetValues();
         }
 
         private void run_Click(object sender, EventArgs e)
@@ -65,7 +66,7 @@ namespace cmsc214project
 
             lexer();
             parse();
-            evaluate_code(test_in);
+            //evaluate_code(test_in);
             //output.AppendText(cToken);
         }
 
@@ -214,9 +215,13 @@ namespace cmsc214project
             {
                 if (checkVar())
                 {
-                    output.AppendText("Variable Declaration\n");
+                    output.AppendText("Variable Declaration! :)\n");
                     lexer();
                     parse();
+                }
+                else if(checkScan())
+                {
+                    output.AppendText("Scan! :)\n");
                 }
                 else
                 {
@@ -283,7 +288,7 @@ namespace cmsc214project
                 cType =  cToken;
                 line = cLine;
                 lexer();
-                if (line==cLine && isVarName())
+                if (line==cLine && isVarName() && !variableExists(cToken))
                 {
                     cVar = cToken;
                     tempToken = cToken;
@@ -368,6 +373,10 @@ namespace cmsc214project
                     {
                         displayError("Imbalidong pangalan ng baryante");
                     }
+                    else if (variableExists(cToken))
+                    {
+                        displayError("'" + cToken + "' ay naideklarang baryante ulit");
+                    }
                     
                 }
             }
@@ -403,10 +412,36 @@ namespace cmsc214project
             if (cToken == "IKUHA")
             {
                 lexer();
-               /* if (checkVar())
+                if (variableExists(cToken))
                 {
                     return true;
-                }*/
+                }
+                else
+                {
+                    displayError("'"+cToken+"' ay hindi naideklarang baryante");
+                }
+            }
+            return false;
+        }
+
+        /*
+         * Checks if statement is an assignment statement
+         */
+        private Boolean checkAssign()
+        {
+            if (variableExists(cToken))
+            {
+                lexer();
+                if (cToken == "AY")
+                {
+                    lexer();
+                    //code here
+                    return true;
+                }
+                else
+                {
+                    displayError("Nawawala o Inaasahang AY");
+                }
             }
             return false;
         }
@@ -675,11 +710,5 @@ namespace cmsc214project
                 ctr++;//move to the next lexeme
             }
         }
-
-        private void code_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
     }
 }

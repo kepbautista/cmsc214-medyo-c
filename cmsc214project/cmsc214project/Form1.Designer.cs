@@ -40,20 +40,19 @@
             this.code.Location = new System.Drawing.Point(23, 40);
             this.code.Multiline = true;
             this.code.Name = "code";
-            this.code.Size = new System.Drawing.Size(486, 274);
+            this.code.Size = new System.Drawing.Size(660, 274);
             this.code.TabIndex = 0;
-            this.code.TextChanged += new System.EventHandler(this.code_TextChanged);
             // 
             // output
             // 
             this.output.BackColor = System.Drawing.Color.Black;
             this.output.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.output.ForeColor = System.Drawing.Color.White;
-            this.output.Location = new System.Drawing.Point(555, 40);
+            this.output.Location = new System.Drawing.Point(699, 40);
             this.output.Multiline = true;
             this.output.Name = "output";
             this.output.ReadOnly = true;
-            this.output.Size = new System.Drawing.Size(486, 274);
+            this.output.Size = new System.Drawing.Size(584, 274);
             this.output.TabIndex = 1;
             // 
             // run
@@ -80,7 +79,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1078, 447);
+            this.ClientSize = new System.Drawing.Size(1316, 627);
             this.Controls.Add(this.clear);
             this.Controls.Add(this.run);
             this.Controls.Add(this.output);
