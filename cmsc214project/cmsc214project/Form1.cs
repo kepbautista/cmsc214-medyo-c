@@ -80,15 +80,16 @@ namespace cmsc214project
         {
             string temp = "";
             cToken = "";
-
             //checks if end of line for the code
             if (cLine < tokens.Length)
             {
                 //checks if the current index is still within the bounds of the current line in the code
                 if (cIndex < tokens[cLine].Length)
                 {
+                    
                     cToken = tokens[cLine][cIndex].ToString();
                     skipSpaces();
+                    
                     //if there's nothing in that line
                     if (cToken.Length == 0 && tokens[cLine].Length == 0)
                     {
@@ -101,6 +102,7 @@ namespace cmsc214project
                         //checks for string
                         if (cToken == "\"")
                         {
+                            
                             cIndex++;
                             if (cIndex < tokens[cLine].Length)
                             {
@@ -139,7 +141,7 @@ namespace cmsc214project
 
                             //checks if there is a space after the string
                             temp = "";
-                            if (cIndex < tokens[cLine].Length)
+                            /*if (cIndex < tokens[cLine].Length)
                             {
                                 temp = tokens[cLine][cIndex].ToString();
                                 if (temp == " ")
@@ -151,11 +153,13 @@ namespace cmsc214project
                                 {
                                     displayError("Kulang o Inaasahang sa patlang");
                                 }
-                            }
+                            }*/
                         }//end of string
                         else if (cToken == "\'")
                         {
+                            code.AppendText("\na" + cIndex.ToString());
                             cIndex++;
+                            
                             if (cIndex < tokens[cLine].Length)
                             {
                                 cToken = tokens[cLine][cIndex].ToString();
@@ -167,6 +171,7 @@ namespace cmsc214project
                                     if (cToken == "\'")
                                     {
                                         cToken = "\'" + temp + "\'";
+                                        cIndex++;
                                     }
                                     else
                                     {
@@ -196,8 +201,6 @@ namespace cmsc214project
                                 }
                             }
                             cToken = temp;
-                            //if (!parseFlag)
-                            //    token();
                         }//end of cToken
                     }
                 } //end of if (cIndex < tokens[cLine].Length)
@@ -214,13 +217,14 @@ namespace cmsc214project
 
         private void parse()
         {
-            if (cLine < tokens.Length && error == false)
+            while(cLine < tokens.Length && error == false)
             {
+                
                 if (checkVar())
                 {
                     output.AppendText("Variable Declaration! :)\n");
-                    lexer();
-                    parse();
+                    //lexer();
+                    //parse();
                 }
                 else if(checkScan())
                 {
@@ -230,6 +234,7 @@ namespace cmsc214project
                 {
                     displayError("Imbalidong salita");
                 }
+                lexer();
             }
         }
 
