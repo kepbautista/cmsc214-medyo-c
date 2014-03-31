@@ -243,6 +243,16 @@ namespace cmsc214project
             else return false;
         }
 
+        /*Change value of a variable*/
+        private void changeVarValue(String varname, String value)
+        {
+            Tuple<string, string> t = (Tuple<string, string>)symbolTable[varname];
+            Tuple<string, string> newValue = new Tuple<string, string>(t.Item1,value);
+
+            //replace with new value
+            symbolTable[varname] = newValue;
+        }
+
         /* Print values of the hash table*/
         private void printSymbolTable(){
             foreach(DictionaryEntry entry in symbolTable){
