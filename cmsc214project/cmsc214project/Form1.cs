@@ -65,11 +65,11 @@ namespace cmsc214project
             }
 
             String[] test_in = {"4","5","*","6","*","IPAKITA",
-                                "4","5","-","IPAKITANA"};
+                                "4","5","-","IPAKITANA","VAR","IKUHA"};
 
             lexer();
             parse();
-            //evaluate_code(test_in);
+            evaluate_code(test_in);
             //output.AppendText(cToken);
         }
 
@@ -285,13 +285,15 @@ namespace cmsc214project
         }
 
         /**Read input from user**/
-        private void readInput()
+        private String readInput()
         {
             f2.ShowDialog();
             String input = f2.textBox1.Text;
 
             closed = f2.isClosed();
             f2.textBox1.Text = "";//reset text
+			
+			return input;
         }
 
         /*
@@ -597,6 +599,12 @@ namespace cmsc214project
                     /*else if(){
                     }*/
 
+                    //check if input is a variable
+                    else if(variableExists(i))
+                    {
+						s.Push(i);
+                    }
+
                     //input is a command
                     else
                     {
@@ -728,6 +736,20 @@ namespace cmsc214project
 
                     //clear arithmetic accumulators
                     clearAccumuators();
+                }
+
+                //getting input
+                else if(ex == "IKUHA"){
+					//get value from user
+					String value = readInput();
+					
+					//get variable name from stack
+					String varname = (String)s.Pop();
+
+                    output.Text += Environment.NewLine+"Variable name: "+varname+" Value: "+value;
+
+					//assign input value to the variable
+					changeVarValue(varname,value);
                 }
 
                 ctr++;//move to the next lexeme
