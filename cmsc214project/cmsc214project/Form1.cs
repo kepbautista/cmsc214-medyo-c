@@ -137,6 +137,11 @@ namespace cmsc214project
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    cIndex--;
+                                    cToken = tokens[cLine][cIndex - 1].ToString();
+                                }
                             }
                             else
                             {
@@ -496,61 +501,39 @@ namespace cmsc214project
                     tempIndex = cIndex;
                     lexer();
 
-                    storeVar(cType, cVar, "BETEL");
+                    
 
                     if (line == cLine && cToken == "AY")
                     {
                         lexer();
-                        int cValue1;
-                        float cValue2;
-                        if (line == cLine && cType == dataTypes[0] && int.TryParse(cToken, out cValue1))
+                        if (checkExpr('A') && (cType == "INTEDYER" || cType == "PLOWT"))
                         {
                             lexer();
-                            //storeVar(cType, cVar, cToken);
-                            //output.Text = cType+cVar+cValue1.ToString();
+                            storeVar(cType, cVar, "BETEL");
                             return true;
                         }
-                        else if (line == cLine && cType == dataTypes[1] && float.TryParse(cToken, out cValue2))
+                        else if (checkExpr('L') && cType == "BULYAN")
                         {
                             lexer();
-                            //storeVar(cType, cVar, cValue2);
-                            //output.Text = cType+cVar+cValue2.ToString();
+                            storeVar(cType, cVar, "BETEL");
                             return true;
                         }
-                        else if (line == cLine && cType == dataTypes[2] && (cToken == "totoo" || cToken == "mali"))
+                        else if(cToken[0] == '\"' && cToken[cToken.Length-1] == '\"' && cType == "ISTRING")
                         {
                             lexer();
-                            //storeVar(cType, cVar, cValue3);
-                            //output.Text = cType + cVar + cToken;
+                            storeVar(cType, cVar, cToken.Substring(1,cToken.Length-1));
                             return true;
                         }
-                        else if (line == cLine && cType == dataTypes[3] && (cToken[0] == '\"' && cToken[cToken.Length-1] == '\"'))
+                        else if (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'' && cType == "KAR")
                         {
                             lexer();
-                            //storeVar(cType, cVar, cValue3);
-                            //output.Text = cType + cVar + cToken;
-                            return true;
-                        }
-                        else if (line == cLine && cType == dataTypes[4] && (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\''))
-                        {
-                            lexer();
-                            //storeVar(cType, cVar, cValue3);
-                            //output.Text = cType + cVar + cToken;
+                            storeVar(cType, cVar, cToken.Substring(1, cToken.Length - 1));
                             return true;
                         }
                         else
                         {
-                            if (line != cLine)
-                            {
-                                displayError("Nawawala o Inaasahang halaga ng baryante");
-                            }
-                            else
-                            {
-                                displayError("Magkasalungat na uri");
-                            }
-                            
+                            displayError("Magkasalungat na uri");
                         }
-
                     }
                     else
                     {
@@ -592,7 +575,6 @@ namespace cmsc214project
                     lexer();
                     return true;
                 }
-                return true;
             }
             return false;
         }
@@ -649,69 +631,76 @@ namespace cmsc214project
             if (cToken == "KUNG")
             {
                 lexer();
-                //checkExpr();
-                if (cToken == "[")
+                if (checkExpr())
                 {
                     lexer();
-                    while (cToken != "]" && cLine < tokens.Length && error==false)
+                    if (cToken == "[")
                     {
-                        if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
-                        {
-                            displayError("Imbalidong salita");
-                            break;
-                        }
-                    }
-                    
-                    if (cToken == "]")
-                    {
-                        
                         lexer();
-                        if(cToken == "EDI")
+                        while (cToken != "]" && cLine < tokens.Length && error == false)
                         {
-                            lexer();
-                            if (cToken == "KUNG")
+                            if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
                             {
-                                checkIf();
+                                displayError("Imbalidong salita");
+                                break;
                             }
-                            else
+                        }
+
+                        if (cToken == "]")
+                        {
+
+                            lexer();
+                            if (cToken == "EDI")
                             {
-                                if (cToken == "[")
+                                lexer();
+                                if (cToken == "KUNG")
                                 {
-                                    lexer();
-                                    while (cToken != "]" && cLine < tokens.Length && error==false)
-                                    {
-                                        if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
-                                        {
-                                            displayError("Imbalidong salita");
-                                            break;
-                                        }
-                                    }
-                                    if (cToken == "]")
-                                    {
-                                        lexer();
-                                        return true;
-                                    }
-                                    else
-                                    {
-                                        displayError("Nawawala o Inaaasahang ]");
-                                    }
+                                    checkIf();
                                 }
                                 else
                                 {
-                                    displayError("Nawawala o Inaaasahang [");
+                                    if (cToken == "[")
+                                    {
+                                        lexer();
+                                        while (cToken != "]" && cLine < tokens.Length && error == false)
+                                        {
+                                            if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
+                                            {
+                                                displayError("Imbalidong salita");
+                                                break;
+                                            }
+                                        }
+                                        if (cToken == "]")
+                                        {
+                                            lexer();
+                                            return true;
+                                        }
+                                        else
+                                        {
+                                            displayError("Nawawala o Inaaasahang ]");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        displayError("Nawawala o Inaaasahang [");
+                                    }
                                 }
                             }
+                            if (error == false) return true;
                         }
-                        if(error == false) return true;
+                        else
+                        {
+                            displayError("Nawawala o Inaaasahang ]");
+                        }
                     }
                     else
                     {
-                        displayError("Nawawala o Inaaasahang ]");
+                        displayError("Nawawala o Inaaasahang [");
                     }
                 }
                 else
                 {
-                    displayError("Nawawala o Inaaasahang [");
+                    displayError("Nawawala o Inaasahang ekspresyon");
                 }
             }
             return false;
@@ -781,8 +770,9 @@ namespace cmsc214project
             {
                 return true;
             }
-            else if ((cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
+            else if (expType == 'A' && (cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
             {
+
                 lexer(); checkExpr('A');
                 lexer(); checkExpr('A');
             }
