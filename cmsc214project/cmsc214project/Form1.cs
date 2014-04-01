@@ -69,6 +69,7 @@ namespace cmsc214project
                                 "4","5","-","IPAKITANA","VAR","IKUHA"};
             String[] a = {"1","2","-","3","+"};
             lexer();
+
             if(error == false) parse();
             //if (error == false) evaluate_code(test_in);
            //Display line numbers
