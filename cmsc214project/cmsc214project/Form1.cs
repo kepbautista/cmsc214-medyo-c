@@ -24,6 +24,7 @@ namespace cmsc214project
         Form2 f2 = new Form2();
 
         Stack<String> stack = new Stack<String>();
+        Stack<String> expr = new Stack<String>();
 		//symbol table for storing values of variables
 		Hashtable symbolTable = new Hashtable(); 
 		
@@ -33,6 +34,7 @@ namespace cmsc214project
         */
         Double acc = 0.0;//store arithmetic values here
         Double acx = 1.0;
+        Boolean abc = false;
         Boolean onAcc = false;//boolean value to determine if accumulator is being used
 
         public Form1()
@@ -51,7 +53,7 @@ namespace cmsc214project
 
         private void run_Click(object sender, EventArgs e)
         {
-            int i, j;
+            int i,j;
 
             //Resets values of all variables
             resetValues();
@@ -71,16 +73,22 @@ namespace cmsc214project
             String[] a = {"1","2","-","3","+"};
             lexer();
 
+            parse();
+            cLine = 0;
+            cIndex = 0;
+            cToken = "";
+
             if(error == false) parse();
             //if (error == false) evaluate_code(test_in);
+
            //Display line numbers
-            /*code.Text = "";
+            code.Text = "";
             for (i = 0; i < tokens.Length; i++)
             {
                 j = i + 1;
                 if (i == tokens.Length - 1) code.AppendText(j + "   " + tokens[i]);
                 else code.AppendText(j + "   " + tokens[i] + "\r\n");
-            }*/
+            }
         }
 
         /*
@@ -268,20 +276,37 @@ namespace cmsc214project
             }
         }
 
-        private void evalNumExpr(String[] cmd)
+        private void evalNumExpr()
         {
             //initialize stack
             Stack<Object> s = new Stack<Object>();
             Double result = 0;
             String ex = "";
-            int ctr = 0;
 
-            while (ctr < cmd.Length)
+            if (expr.Count() < 2 && expr.Count() > 0)
+            {
+                string temp = expr.Pop();
+                if (Double.TryParse(temp, out result))
+                {
+                    acc = result;
+                }
+                else if(temp == "totoo")
+                {
+                    abc = true;
+                }
+                else if (temp == "peke")
+                {
+                    abc = false;
+                }
+               return;
+            }
+
+            while (expr.Count() != 0)
             {
                 /**
                     fetch part
                 **/
-                String i = cmd[ctr];
+                String i = expr.Pop();
                 while (true)
                 {
                     //check if input is a number
@@ -308,7 +333,7 @@ namespace cmsc214project
                     }
 
                     //get next lexeme
-                    i = cmd[++ctr];
+                    i = expr.Pop();
                 }
 
                 /**
@@ -320,100 +345,56 @@ namespace cmsc214project
                 //addition operator
                 if (ex == "+")
                 {
-                    onAcc = true;//turn on accumulator
-                    while (s.Count != 0)
-                    {
-                        acc += (Double)s.Pop();
-                    }
+                    s.Push((Double)s.Pop() + (Double)s.Pop());
                 }
 
                 //subtraction operator
                 else if (ex == "-")
                 {
-                    while (s.Count != 0)
-                    {
-                        if (onAcc)
-                            acc -= (Double)s.Pop();
-                        //it is the very first operand
-                        else
-                        {
-                            acc = (Double)s.Pop();
-                            onAcc = true;//turn on accumulator
-                        }
-                    }
+                    s.Push((Double)s.Pop() - (Double)s.Pop());
                 }
 
                 //multiplication operator
                 else if (ex == "*")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx *= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+                    s.Push((Double)s.Pop() * (Double)s.Pop());
                 }
 
                 //division operator
                 else if (ex == "/")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx /= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+                    s.Push((Double)s.Pop() / (Double)s.Pop());
                 }
 
                 //modulo operator
                 else if (ex == "%")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx %= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+                    s.Push((Double)s.Pop() % (Double)s.Pop());
                 }
-                ctr++;
+
+                /** Logical Operations**/
+                else if (ex == "<")
+                {
+                    abc = (Double)s.Pop() < (Double)s.Pop() ? true : false;
+                } 
+                else if (ex == ">") 
+                {
+                    abc = (Double)s.Pop() > (Double)s.Pop() ? true : false;
+                } 
+                else if (ex == "<=")
+                {
+                    abc = (Double)s.Pop() <= (Double)s.Pop() ? true : false;
+                } 
+                else if (ex == ">=")
+                {
+                    abc = (Double)s.Pop() >= (Double)s.Pop() ? true : false;
+                }
+                else if (ex == "=")
+                {
+                    abc = (Double)s.Pop() == (Double)s.Pop() ? true : false;
+                }
             }
-            output.AppendText(acc.ToString());
+            if(s.Count() != 0) acc = (Double)s.Pop();
         }
 
          /*Get Type and Content of a certain variable*/
@@ -437,6 +418,7 @@ namespace cmsc214project
 
             //replace with new value
             symbolTable[varname] = newValue;
+            //printSymbolTable();
         }
 
         /* Print values of the hash table*/
@@ -464,7 +446,7 @@ namespace cmsc214project
             //store variable name, type and value in the symbol table
             symbolTable.Add(cVar,value);
 
-            printSymbolTable();
+            //printSymbolTable();
         }
 
         /**Read input from user**/
@@ -502,21 +484,26 @@ namespace cmsc214project
                     if (line == cLine && cToken == "AY")
                     {
                         lexer();
+                        
                         if (cType == "INTEDYER" && checkExpr('A') && fFlag == false)
                         {
-                            storeVar(cType, cVar, "BETEL");
+                            evalNumExpr();
+                            storeVar(cType, cVar, acc.ToString());
                             lexer();
                             return true;
                         }
                         else if (cType == "PLOWT" && checkExpr('A') && fFlag == true)
                         {
-                            storeVar(cType, cVar, "BETEL");
+                            evalNumExpr();
+                            storeVar(cType, cVar, acc.ToString());
                             lexer();
                             return true;
                         }
                         else if (cType == "BULYAN" && checkExpr('L'))
                         {
-                            storeVar(cType, cVar, "BETEL");
+                            evalNumExpr();
+                            if(abc == true) storeVar(cType, cVar, "totoo");
+                            else if (abc == false) storeVar(cType, cVar, "peke");
                             lexer();
                             return true;
                         }
@@ -611,14 +598,55 @@ namespace cmsc214project
          */
         private Boolean checkAssign()
         {
+            string cVar = "";
+            string cType = "";
             if (variableExists(cToken))
             {
+                cVar = cToken;
+                cType = getVariableContent(cVar).Item1;
                 lexer();
                 if (cToken == "AY")
                 {
                     lexer();
-                    //checkExpr();
-                    return true;
+
+                    if (cType == "INTEDYER" && checkExpr('A') && fFlag == false)
+                    {
+                        evalNumExpr();
+                        changeVarValue(cVar, acc.ToString());
+                        lexer();
+                        return true;
+                    }
+                    else if (cType == "PLOWT" && checkExpr('A') && fFlag == true)
+                    {
+                        evalNumExpr();
+                        changeVarValue(cVar, acc.ToString());
+                        lexer();
+                        return true;
+                    }
+                    else if (cType == "BULYAN" && checkExpr('L'))
+                    {
+                        evalNumExpr();
+                        if (abc == true) changeVarValue(cVar, "totoo");
+                        else if (abc == false) changeVarValue(cVar, "peke");
+                        lexer();
+                        return true;
+                    }
+                    else if (cType == "ISTRING" && cToken[0] == '\"' && cToken[cToken.Length - 1] == '\"')
+                    {
+                        changeVarValue(cVar, cToken.Substring(1, cToken.Length - 2));
+                        lexer();
+                        return true;
+                    }
+                    else if (cType == "KAR" && cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'')
+                    {
+                        changeVarValue(cVar, cToken[1].ToString());
+                        lexer();
+                        return true;
+                    }
+                    else
+                    {
+                        displayError("Magkasalungat na uri");
+                    }
                 }
                 else
                 {
@@ -784,37 +812,59 @@ namespace cmsc214project
                 {
                     fFlag = true;
                 }
+                expr.Push(cToken);
                 return true;
             }
-            else if (expType == 'A' && (cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
+            else if(cToken == "totoo" || cToken == "peke")
             {
-
+                expr.Push(cToken);
+                return true;
+            }
+            else if ((cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
+            {
+                expr.Push(cToken);
                 lexer(); checkExpr('A');
                 lexer(); checkExpr('A');
             }
             else if (expType == 'L' && (cToken == ">" || cToken == ">=" || cToken == "<=" || cToken == "=" || cToken == "<"))
             {
+                expr.Push(cToken);
                 lexer(); checkExpr('L');
                 lexer(); checkExpr('L');
             }
             else if (expType == 'A' && variableExists(cToken))
             {
+                if (getVariableContent(cToken).Item1 == "PLOWT") fFlag = true;
                 if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT")
                 {
                     displayError("Inaasahan ang INTEDYER o PLOWT ngunit ang baryante ay hindi ang inaasahan");
+                    return false;
+                }
+                else
+                {
+                    expr.Push(getVariableContent(cToken).Item2);
+                    return true;
                 }
             }
             else if (expType == 'L' && variableExists(cToken))
             {
+                if (getVariableContent(cToken).Item1 == "PLOWT") fFlag = true;
                 if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT" && getVariableContent(cToken).Item1 != "BULYAN")
                 {
                     displayError("Inaasahan ang INTEDYER o PLOWT o BULYAN ngunit ang baryante ay hindi ang inaasahan");
+                    return false;
                 }
-                if (getVariableContent(cToken).Item1 == "PLOWT") fFlag = true;
+                else
+                {
+                    expr.Push(getVariableContent(cToken).Item2);
+                    return true;
+                }
+                
             }
             else
             {
                 displayError("Inaasahan ang ibang bagay ngunit ang iniligay ay \'" + cToken + "\'");
+                return false;
             }
             return true;
         }
@@ -824,12 +874,15 @@ namespace cmsc214project
          */
         private void resetValues()
         {
+            clearAccumuators();
             cToken = "";
             cLine = 0;
             cIndex = 0;
             error = false;
             fFlag = false;
             output.Text = "";
+            expr.Clear();
+            stack.Clear();
             output.ForeColor = Color.White;
             symbolTable.Clear();//reset hashtable
         }
@@ -910,6 +963,7 @@ namespace cmsc214project
 
         private void clearAccumuators()
         {
+            abc = false;
             acc = 0.0;
             acx = 1.0;
             onAcc = false;
