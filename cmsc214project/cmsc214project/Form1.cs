@@ -22,6 +22,7 @@ namespace cmsc214project
 
         Form2 f2 = new Form2();
 
+        Stack<String> stack = new Stack<String>();
 		//symbol table for storing values of variables
 		Hashtable symbolTable = new Hashtable(); 
 		
@@ -49,7 +50,7 @@ namespace cmsc214project
 
         private void run_Click(object sender, EventArgs e)
         {
-            int i;
+            int i, j;
 
             //Resets values of all variables
             resetValues();
@@ -66,11 +67,18 @@ namespace cmsc214project
 
             String[] test_in = {"4","5","*","6","*","IPAKITA",
                                 "4","5","-","IPAKITANA","VAR","IKUHA"};
-
+            String[] a = {"1","2","-","3","+"};
             lexer();
-            parse();
-            evaluate_code(test_in);
-            //output.AppendText(cToken);
+            if(error == false) parse();
+            //if (error == false) evaluate_code(test_in);
+           //Display line numbers
+            /*code.Text = "";
+            for (i = 0; i < tokens.Length; i++)
+            {
+                j = i + 1;
+                if (i == tokens.Length - 1) code.AppendText(j + "   " + tokens[i]);
+                else code.AppendText(j + "   " + tokens[i] + "\r\n");
+            }*/
         }
 
         /*
@@ -99,65 +107,84 @@ namespace cmsc214project
                     }
                     else
                     {
+                        if(cToken == "<")
+                        {
+                            cIndex++;
+                            if (cIndex < tokens[cLine].Length)
+                            {
+                                cToken = tokens[cLine][cIndex].ToString();
+                                cIndex++;
+                                if (cIndex < tokens[cLine].Length && cToken == "3")
+                                {
+                                    cToken = tokens[cLine][cIndex].ToString();
+                                    cIndex++;
+                                    while (cIndex < tokens[cLine].Length && cToken != "<")
+                                    {
+                                        if (cIndex < tokens[cLine].Length) cToken = tokens[cLine][cIndex].ToString();
+                                        cIndex++;
+                                    }
+                                    if (cIndex < tokens[cLine].Length && cToken == "<")
+                                    {
+                                        cToken = tokens[cLine][cIndex].ToString();
+                                        cIndex++;
+                                        if (cToken == "3")
+                                        {
+                                            lexer();
+                                        }
+                                        else
+                                        {
+                                            displayError("Inaasahang <3");
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                displayError("Imbalidong salita");
+                            }
+                        }//end of comment
                         //checks for string
-                        if (cToken == "\"")
+                        else if (cToken == "\"")
                         {
                             
                             cIndex++;
                             if (cIndex < tokens[cLine].Length)
                             {
                                 cToken = tokens[cLine][cIndex].ToString();
+                                while (cToken != "\"" && cIndex < tokens[cLine].Length)
+                                {
+                                    temp = temp + cToken;
+                                    cIndex++;
+
+                                    if (cIndex < tokens[cLine].Length)
+                                    {
+                                        cToken = tokens[cLine][cIndex].ToString();
+                                    }
+                                }
+
+                                //if successfully caught a string
+                                if (cToken == "\"")
+                                {
+                                    cToken = "\"" + temp + "\"";
+                                    // if (!parseFlag) tokenize();
+                                    cIndex++;
+                                }
+                                else
+                                {
+                                    if (error == false)
+                                    {
+                                        displayError("Kulang o Inaasahang \"");
+                                    }
+                                }
                             }
                             else
                             {
                                 displayError("Kulang o Inaasahang \"");
                             }
-
-                            while (cToken != "\"" && cIndex < tokens[cLine].Length)
-                            {
-                                temp = temp + cToken;
-                                cIndex++;
-
-                                if (cIndex < tokens[cLine].Length)
-                                {
-                                    cToken = tokens[cLine][cIndex].ToString();
-                                }
-                            }
-
-                            //if successfully caught a string
-                            if (cToken == "\"")
-                            {
-                                cToken = "\"" + temp + "\"";
-                                // if (!parseFlag) tokenize();
-                                cIndex++;
-                            }
-                            else
-                            {
-                                if (error == false)
-                                {
-                                    displayError("Kulang o Inaasahang \"");
-                                }
-                            }
-
-                            //checks if there is a space after the string
-                            temp = "";
-                            /*if (cIndex < tokens[cLine].Length)
-                            {
-                                temp = tokens[cLine][cIndex].ToString();
-                                if (temp == " ")
-                                {
-                                    cIndex++;
-                                    skipSpaces();
-                                }
-                                else
-                                {
-                                    displayError("Kulang o Inaasahang sa patlang");
-                                }
-                            }*/
                         }//end of string
+                        //check for character
                         else if (cToken == "\'")
                         {
-                            code.AppendText("\na" + cIndex.ToString());
                             cIndex++;
                             
                             if (cIndex < tokens[cLine].Length)
@@ -217,25 +244,169 @@ namespace cmsc214project
 
         private void parse()
         {
-            while(cLine < tokens.Length && error == false)
+            
+            if(cLine < tokens.Length && error == false)
             {
                 
-                if (checkVar())
+                if (checkVar() || checkScan() || checkPrint() || checkAssign() || checkIf() || checkLoop())
                 {
-                    output.AppendText("Variable Declaration! :)\n");
-                    //lexer();
-                    //parse();
-                }
-                else if(checkScan())
-                {
-                    output.AppendText("Scan! :)\n");
+                    //code.AppendText("+" + cToken + "+");
+                    //output.AppendText("Parsed! :)\n");
                 }
                 else
                 {
                     displayError("Imbalidong salita");
                 }
-                lexer();
+                if (cLine < tokens.Length && error == false) parse();
             }
+        }
+
+        private void evalNumExpr(String[] cmd)
+        {
+            //initialize stack
+            Stack<Object> s = new Stack<Object>();
+            Double result = 0;
+            String ex = "";
+            int ctr = 0;
+
+            while (ctr < cmd.Length)
+            {
+                /**
+                    fetch part
+                **/
+                String i = cmd[ctr];
+                while (true)
+                {
+                    //check if input is a number
+                    if (Double.TryParse(i, out result))
+                    {
+                        s.Push(result);
+                    }
+
+                    //check if input is a string literal
+                    /*else if(){
+                    }*/
+
+                    //check if input is a variable
+                    else if (variableExists(i))
+                    {
+                        s.Push(i);
+                    }
+
+                    //input is a command
+                    else
+                    {
+                        ex = i;
+                        break;
+                    }
+
+                    //get next lexeme
+                    i = cmd[++ctr];
+                }
+
+                /**
+                 * execute part
+                 * Check what kind of instruction
+                 **/
+
+                /** Arithmetic Operations**/
+                //addition operator
+                if (ex == "+")
+                {
+                    onAcc = true;//turn on accumulator
+                    while (s.Count != 0)
+                    {
+                        acc += (Double)s.Pop();
+                    }
+                }
+
+                //subtraction operator
+                else if (ex == "-")
+                {
+                    while (s.Count != 0)
+                    {
+                        if (onAcc)
+                            acc -= (Double)s.Pop();
+                        //it is the very first operand
+                        else
+                        {
+                            acc = (Double)s.Pop();
+                            onAcc = true;//turn on accumulator
+                        }
+                    }
+                }
+
+                //multiplication operator
+                else if (ex == "*")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx *= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+
+                //division operator
+                else if (ex == "/")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx /= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+
+                //modulo operator
+                else if (ex == "%")
+                {
+                    while (s.Count != 0)
+                    {
+                        acx %= (Double)s.Pop();
+                    }
+
+                    //determine kung paano isasama sa accumulator...
+                    if (onAcc)
+                    {
+                        acc *= acx;
+                    }
+                    //it is the very first operand
+                    else
+                    {
+                        onAcc = true;//turn on accumulator
+                        acc = acx;
+                    }
+
+                    acx = 1;
+                }
+                ctr++;
+            }
+            output.AppendText(acc.ToString());
         }
 
          /*Get Type and Content of a certain variable*/
@@ -286,7 +457,7 @@ namespace cmsc214project
             //store variable name, type and value in the symbol table
             symbolTable.Add(cVar,value);
 
-            printSymbolTable();
+            //printSymbolTable();
         }
 
         /**Read input from user**/
@@ -334,30 +505,35 @@ namespace cmsc214project
                         float cValue2;
                         if (line == cLine && cType == dataTypes[0] && int.TryParse(cToken, out cValue1))
                         {
+                            lexer();
                             //storeVar(cType, cVar, cToken);
                             //output.Text = cType+cVar+cValue1.ToString();
                             return true;
                         }
                         else if (line == cLine && cType == dataTypes[1] && float.TryParse(cToken, out cValue2))
                         {
+                            lexer();
                             //storeVar(cType, cVar, cValue2);
                             //output.Text = cType+cVar+cValue2.ToString();
                             return true;
                         }
                         else if (line == cLine && cType == dataTypes[2] && (cToken == "totoo" || cToken == "mali"))
                         {
+                            lexer();
                             //storeVar(cType, cVar, cValue3);
                             //output.Text = cType + cVar + cToken;
                             return true;
                         }
                         else if (line == cLine && cType == dataTypes[3] && (cToken[0] == '\"' && cToken[cToken.Length-1] == '\"'))
                         {
+                            lexer();
                             //storeVar(cType, cVar, cValue3);
                             //output.Text = cType + cVar + cToken;
                             return true;
                         }
                         else if (line == cLine && cType == dataTypes[4] && (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\''))
                         {
+                            lexer();
                             //storeVar(cType, cVar, cValue3);
                             //output.Text = cType + cVar + cToken;
                             return true;
@@ -378,19 +554,8 @@ namespace cmsc214project
                     }
                     else
                     {
-                        if (line != cLine)
-                        {
-                            if (cLine < tokens.Length)
-                            {
-                                //go back to the previous token
-                                cLine--;
-                                cToken = tempToken;
-                                cIndex = tempIndex;
-                                //output.AppendText(cLine+" "+cToken+" "+cIndex);
-                            }
-                            return true;
-                        }
-                        else displayError("Nawawala o Inaasahang AY");
+                        if (line != cLine) return true;
+                        else if (line == cLine) displayError("Nawawala o Inaasahang AY");
                     }
                 }
                 else
@@ -422,14 +587,12 @@ namespace cmsc214project
             if (cToken == "IPAKITA" || cToken=="IPAKITANA")
             {
                 lexer();
-                /*if (checkArith())
+                if (checkExpr())
                 {
+                    lexer();
                     return true;
                 }
-                else if (checkLogic())
-                {
-                    return true;
-                }*/
+                return true;
             }
             return false;
         }
@@ -444,6 +607,7 @@ namespace cmsc214project
                 lexer();
                 if (variableExists(cToken))
                 {
+                    lexer();
                     return true;
                 }
                 else
@@ -465,7 +629,7 @@ namespace cmsc214project
                 if (cToken == "AY")
                 {
                     lexer();
-                    //code here
+                    //checkExpr();
                     return true;
                 }
                 else
@@ -474,6 +638,178 @@ namespace cmsc214project
                 }
             }
             return false;
+        }
+
+        /*
+         * Checks if statement is an if-else statement
+         */
+        private Boolean checkIf()
+        {
+            
+            if (cToken == "KUNG")
+            {
+                lexer();
+                //checkExpr();
+                if (cToken == "[")
+                {
+                    lexer();
+                    while (cToken != "]" && cLine < tokens.Length && error==false)
+                    {
+                        if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
+                        {
+                            displayError("Imbalidong salita");
+                            break;
+                        }
+                    }
+                    
+                    if (cToken == "]")
+                    {
+                        
+                        lexer();
+                        if(cToken == "EDI")
+                        {
+                            lexer();
+                            if (cToken == "KUNG")
+                            {
+                                checkIf();
+                            }
+                            else
+                            {
+                                if (cToken == "[")
+                                {
+                                    lexer();
+                                    while (cToken != "]" && cLine < tokens.Length && error==false)
+                                    {
+                                        if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
+                                        {
+                                            displayError("Imbalidong salita");
+                                            break;
+                                        }
+                                    }
+                                    if (cToken == "]")
+                                    {
+                                        lexer();
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        displayError("Nawawala o Inaaasahang ]");
+                                    }
+                                }
+                                else
+                                {
+                                    displayError("Nawawala o Inaaasahang [");
+                                }
+                            }
+                        }
+                        if(error == false) return true;
+                    }
+                    else
+                    {
+                        displayError("Nawawala o Inaaasahang ]");
+                    }
+                }
+                else
+                {
+                    displayError("Nawawala o Inaaasahang [");
+                }
+            }
+            return false;
+        }
+
+        /*
+         * Checks if statement is an iterative statement
+         */
+        private Boolean checkLoop()
+        {
+            int cValue;
+            if (cToken == "GAWIN")
+            {
+                lexer();
+                if (int.TryParse(cToken, out cValue) || (variableExists(cToken) && getVariableContent(cToken).Item1 == "INTEDYER"))
+                {
+                    lexer();
+                    
+                    if(cToken == "[")
+                    {
+                        lexer();
+                        while (cToken != "]" && cLine < tokens.Length && error == false)
+                        {
+                            if (!(checkVar() || checkScan() || checkIf() || checkAssign() || checkPrint() || checkLoop()))
+                            {
+                                displayError("Imbalidong salita");
+                                break;
+                            }
+                        }
+
+                        if (cToken == "]")
+                        {
+                            lexer();
+                            return true;
+                        }
+                        else
+                        {
+                            displayError("Nawawala o Inaaasahang ]");
+                        }
+                    }
+                    else
+                    {
+                        displayError("Nawawala o Inaaasahang [");
+                    }
+                }
+                else
+                {
+                    displayError("Inaasahan ang INTEDYER ngunit ang baryante o halaga ay hindi ang inaasahan");
+                }
+            }
+            return false;
+        }
+
+        private Boolean checkExpr(Char expType = 'L')
+        {
+            if (error) return false;
+            /*if (cIndex == tokens[cLine].Length)
+            {
+                displayError("Inaasahan ang baryante o matatag o pagpapahayag ngunit walang naasahan.");
+            }
+            else if (cIndex > tokens[cLine].Length)
+            {
+            }*/
+            Regex exp = new Regex(@"^\-?[0-9]+$");
+            Match m = exp.Match(cToken);
+            if (m.Success)
+            {
+                return true;
+            }
+            else if ((cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
+            {
+                lexer(); checkExpr('A');
+                lexer(); checkExpr('A');
+            }
+            else if (expType == 'L' && (cToken == ">" || cToken == ">=" || cToken == "<=" || cToken == "=" || cToken == "<"))
+            {
+                lexer(); checkExpr('L');
+                lexer(); checkExpr('L');
+            }
+            else if (expType == 'A' && variableExists(cToken))
+            {
+                if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT")
+                {
+                    displayError("Inaasahan ang INTEDYER o PLOWT ngunit ang baryante ay hindi ang inaasahan");
+                }
+            }
+            else if (expType == 'L' && variableExists(cToken))
+            {
+                if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT" && getVariableContent(cToken).Item1 != "BULYAN")
+                {
+                    displayError("Inaasahan ang INTEDYER o PLOWT o BULYAN ngunit ang baryante ay hindi ang inaasahan");
+                }
+            }
+            else
+            {
+                displayError("Inaasahan ang ibang bagay ngunit ang iniligay ay \'" + cToken + "\'");
+            }
+            return true;
         }
 
         /*
