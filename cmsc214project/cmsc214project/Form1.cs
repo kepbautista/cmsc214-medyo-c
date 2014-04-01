@@ -18,6 +18,7 @@ namespace cmsc214project
         int cIndex;                     //current index
         int cLine;                      //current line in the tokens array
         Boolean error = false;          //error flag
+        Boolean fFlag = false;          //float flag
         Boolean closed = false;
 
         Form2 f2 = new Form2();
@@ -462,7 +463,7 @@ namespace cmsc214project
             //store variable name, type and value in the symbol table
             symbolTable.Add(cVar,value);
 
-            //printSymbolTable();
+            printSymbolTable();
         }
 
         /**Read input from user**/
@@ -486,8 +487,6 @@ namespace cmsc214project
             int line;
             string cType = "";
             string cVar = "";
-            string tempToken = "";
-            int tempIndex = 0;
 
             if (isDataType(cToken))
             {
@@ -497,37 +496,39 @@ namespace cmsc214project
                 if (line==cLine && isVarName() && !variableExists(cToken))
                 {
                     cVar = cToken;
-                    tempToken = cToken;
-                    tempIndex = cIndex;
                     lexer();
-
-                    
 
                     if (line == cLine && cToken == "AY")
                     {
                         lexer();
-                        if (checkExpr('A') && (cType == "INTEDYER" || cType == "PLOWT"))
+                        if (cType == "INTEDYER" && checkExpr('A') && fFlag == false)
                         {
-                            lexer();
                             storeVar(cType, cVar, "BETEL");
+                            lexer();
                             return true;
                         }
-                        else if (checkExpr('L') && cType == "BULYAN")
+                        else if (cType == "PLOWT" && checkExpr('A') && fFlag == true)
                         {
-                            lexer();
                             storeVar(cType, cVar, "BETEL");
+                            lexer();
                             return true;
                         }
-                        else if(cToken[0] == '\"' && cToken[cToken.Length-1] == '\"' && cType == "ISTRING")
+                        else if (cType == "BULYAN" && checkExpr('L'))
                         {
+                            storeVar(cType, cVar, "BETEL");
                             lexer();
-                            storeVar(cType, cVar, cToken.Substring(1,cToken.Length-1));
                             return true;
                         }
-                        else if (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'' && cType == "KAR")
+                        else if(cType == "ISTRING" && cToken[0] == '\"' && cToken[cToken.Length-1] == '\"')
                         {
+                            storeVar(cType, cVar, cToken.Substring(1,cToken.Length-2));
                             lexer();
-                            storeVar(cType, cVar, cToken.Substring(1, cToken.Length - 1));
+                            return true;
+                        }
+                        else if (cType == "KAR" && cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'')
+                        {
+                            storeVar(cType, cVar, cToken[1].ToString());
+                            lexer();
                             return true;
                         }
                         else
@@ -537,7 +538,11 @@ namespace cmsc214project
                     }
                     else
                     {
-                        if (line != cLine) return true;
+                        if (line != cLine)
+                        {
+                            storeVar(cType, cVar, "BETEL");
+                            return true;
+                        }
                         else if (line == cLine) displayError("Nawawala o Inaasahang AY");
                     }
                 }
@@ -711,15 +716,19 @@ namespace cmsc214project
          */
         private Boolean checkLoop()
         {
-            int cValue;
             if (cToken == "GAWIN")
             {
                 lexer();
-                if (int.TryParse(cToken, out cValue) || (variableExists(cToken) && getVariableContent(cToken).Item1 == "INTEDYER"))
+                if (!((variableExists(cToken) && getVariableContent(cToken).Item1 == "INTEDYER") || checkExpr('A')))
+                {
+                    displayError("Inaasahan ang INTEDYER ngunit ang ekspresyon ay hindi ang inaasahan");
+                    return false;
+                }
+                else
                 {
                     lexer();
-                    
-                    if(cToken == "[")
+
+                    if (cToken == "[")
                     {
                         lexer();
                         while (cToken != "]" && cLine < tokens.Length && error == false)
@@ -746,10 +755,11 @@ namespace cmsc214project
                         displayError("Nawawala o Inaaasahang [");
                     }
                 }
-                else
+                /*else
                 {
-                    displayError("Inaasahan ang INTEDYER ngunit ang baryante o halaga ay hindi ang inaasahan");
-                }
+                    displayError("Inaasahan ang INTEDYER ngunit ang ekspresyon ay hindi ang inaasahan");
+                    return false;
+                }*/
             }
             return false;
         }
@@ -764,10 +774,15 @@ namespace cmsc214project
             else if (cIndex > tokens[cLine].Length)
             {
             }*/
-            Regex exp = new Regex(@"^\-?[0-9]+$");
+            //Regex exp = new Regex(@"^\-?[0-9]+$");
+            Regex exp = new Regex(@"^[-]?(\d*[.])?\d+$");
             Match m = exp.Match(cToken);
             if (m.Success)
             {
+                if (cToken.Contains("."))
+                {
+                    fFlag = true;
+                }
                 return true;
             }
             else if (expType == 'A' && (cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
@@ -794,6 +809,7 @@ namespace cmsc214project
                 {
                     displayError("Inaasahan ang INTEDYER o PLOWT o BULYAN ngunit ang baryante ay hindi ang inaasahan");
                 }
+                if (getVariableContent(cToken).Item1 == "PLOWT") fFlag = true;
             }
             else
             {
@@ -811,6 +827,7 @@ namespace cmsc214project
             cLine = 0;
             cIndex = 0;
             error = false;
+            fFlag = false;
             output.Text = "";
             output.ForeColor = Color.White;
             symbolTable.Clear();//reset hashtable
