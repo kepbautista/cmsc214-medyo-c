@@ -302,7 +302,7 @@ namespace cmsc214project
                     lexer();
                     checkExpr();
                     evalNumExpr();
-                    output.AppendText(ans + "\n");
+                    output.AppendText(ans + Environment.NewLine);
                 }
                 else if (cToken == "IKUHA")
                 {
@@ -321,9 +321,16 @@ namespace cmsc214project
                         changeVarValue(cToken, value);
                     }
                 }
+                else if (cToken == "GAWIN")
+                {
+                    lexer();
+					checkExpr();
+					evalNumExpr();
+					eval(); 
+                }
 
                 lexer();
-                if (cLine < tokens.Length && error == false) eval();
+               if (cLine < tokens.Length && error == false) eval();
             }
             
         }
