@@ -80,6 +80,7 @@ namespace cmsc214project
                 cLine = 0;
                 cIndex = 0;
                 clearAccumuators();
+                expr.Clear();
                 lexer();
                 output.AppendText("Parsed Successfully!\n");
                 eval();
@@ -288,6 +289,11 @@ namespace cmsc214project
                 {
                     lexer();
                     checkExpr();
+                    /*output.AppendText(expr.Count().ToString());
+                    while (expr.Count()!=0)
+                    {
+                        output.AppendText(expr.Pop());
+                    }*/
                     evalNumExpr();
                     output.AppendText(ans);
                 }
@@ -874,13 +880,15 @@ namespace cmsc214project
             {
                 expr.Push(cToken);
                 return true;
-            }
+            } 
             else if (cToken[0] == '\"' && cToken[cToken.Length-1] == '\"')
             {
+                ans = cToken.Substring(1, cToken.Length - 2);
                 return true;
             }
             else if (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'')
             {
+                ans = cToken[1].ToString();
                 return true;
             }
             else if ((cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
