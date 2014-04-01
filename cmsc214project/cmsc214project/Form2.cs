@@ -24,6 +24,11 @@ namespace cmsc214project
 
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
 		//change value of variable type
 		public void setVarType(String s)
 		{
@@ -39,7 +44,7 @@ namespace cmsc214project
 								return true;
 							break;
 				case "INTEDYER": //check if input is a number and does not contain a decimal point
-                                if(Double.TryParse(input,out d) && input.Contains("."))
+                                if(Double.TryParse(input,out d) && !input.Contains("."))
 								    return true;
                             break;
                 case "KAR": //check if user input is only one character
@@ -69,7 +74,7 @@ namespace cmsc214project
 			String str = textBox1.Text;
 			
 			//check the type of variable
-			if(!typeMatches(vartype,str)){
+			if(typeMatches(vartype,str)){
 				this.Close();
 				closed = true;
 			}

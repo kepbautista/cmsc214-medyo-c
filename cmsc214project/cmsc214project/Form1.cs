@@ -35,6 +35,7 @@ namespace cmsc214project
         Double acc = 0.0;//store arithmetic values here
         Double acx = 1.0;
         Boolean abc = false;
+        string ans = "";
         Boolean onAcc = false;//boolean value to determine if accumulator is being used
 
         public Form1()
@@ -72,14 +73,17 @@ namespace cmsc214project
                                 "4","5","-","IPAKITANA","VAR","IKUHA"};
             String[] a = {"1","2","-","3","+"};
             lexer();
-
             parse();
-            cLine = 0;
-            cIndex = 0;
-            cToken = "";
-
-            if(error == false) parse();
-            //if (error == false) evaluate_code(test_in);
+            
+            if (error == false)
+            {
+                cLine = 0;
+                cIndex = 0;
+                clearAccumuators();
+                lexer();
+                output.AppendText("Parsed Successfully!\n");
+                eval();
+            }
 
            //Display line numbers
             code.Text = "";
@@ -276,6 +280,48 @@ namespace cmsc214project
             }
         }
 
+        private void eval()
+        {
+            if (cLine < tokens.Length && error == false)
+            {
+                if (cToken == "IPAKITA")
+                {
+                    lexer();
+                    checkExpr();
+                    evalNumExpr();
+                    output.AppendText(ans);
+                }
+                else if (cToken == "IPAKITANA")
+                {
+                    lexer();
+                    checkExpr();
+                    evalNumExpr();
+                    output.AppendText(ans + "\n");
+                }
+                else if (cToken == "IKUHA")
+                {
+                    lexer();
+                    if (variableExists(cToken))
+                    {
+                        //get variable type of cToken
+                        Tuple<string, string> t = getVariableContent(cToken);
+                        String varType = t.Item1;
+
+                        f2.setVarType(varType);
+                       
+                        //get value from user
+                        String value = readInput();
+
+                        changeVarValue(cToken, value);
+                    }
+                }
+
+                lexer();
+                if (cLine < tokens.Length && error == false) eval();
+            }
+            
+        }
+
         private void evalNumExpr()
         {
             //initialize stack
@@ -289,14 +335,17 @@ namespace cmsc214project
                 if (Double.TryParse(temp, out result))
                 {
                     acc = result;
+                    ans = acc.ToString();
                 }
                 else if(temp == "totoo")
                 {
                     abc = true;
+                    ans = "totoo";
                 }
                 else if (temp == "peke")
                 {
                     abc = false;
+                    ans = "peke";
                 }
                return;
             }
@@ -376,25 +425,39 @@ namespace cmsc214project
                 else if (ex == "<")
                 {
                     abc = (Double)s.Pop() < (Double)s.Pop() ? true : false;
+                    if (abc == true) ans = "totoo";
+                    else ans = "peke";
                 } 
                 else if (ex == ">") 
                 {
                     abc = (Double)s.Pop() > (Double)s.Pop() ? true : false;
+                    if (abc == true) ans = "totoo";
+                    else ans = "peke";
                 } 
                 else if (ex == "<=")
                 {
                     abc = (Double)s.Pop() <= (Double)s.Pop() ? true : false;
+                    if (abc == true) ans = "totoo";
+                    else ans = "peke";
                 } 
                 else if (ex == ">=")
                 {
                     abc = (Double)s.Pop() >= (Double)s.Pop() ? true : false;
+                    if (abc == true) ans = "totoo";
+                    else ans = "peke";
                 }
                 else if (ex == "=")
                 {
                     abc = (Double)s.Pop() == (Double)s.Pop() ? true : false;
+                    if (abc == true) ans = "totoo";
+                    else ans = "peke";
                 }
             }
-            if(s.Count() != 0) acc = (Double)s.Pop();
+            if (s.Count() != 0)
+            {
+                acc = (Double)s.Pop();
+                ans = acc.ToString();
+            }
         }
 
          /*Get Type and Content of a certain variable*/
@@ -796,14 +859,6 @@ namespace cmsc214project
         private Boolean checkExpr(Char expType = 'L')
         {
             if (error) return false;
-            /*if (cIndex == tokens[cLine].Length)
-            {
-                displayError("Inaasahan ang baryante o matatag o pagpapahayag ngunit walang naasahan.");
-            }
-            else if (cIndex > tokens[cLine].Length)
-            {
-            }*/
-            //Regex exp = new Regex(@"^\-?[0-9]+$");
             Regex exp = new Regex(@"^[-]?(\d*[.])?\d+$");
             Match m = exp.Match(cToken);
             if (m.Success)
@@ -818,6 +873,14 @@ namespace cmsc214project
             else if(cToken == "totoo" || cToken == "peke")
             {
                 expr.Push(cToken);
+                return true;
+            }
+            else if (cToken[0] == '\"' && cToken[cToken.Length-1] == '\"')
+            {
+                return true;
+            }
+            else if (cToken[0] == '\'' && cToken[cToken.Length - 1] == '\'')
+            {
                 return true;
             }
             else if ((cToken == "*" || cToken == "-" || cToken == "+" || cToken == "/" || cToken == "%"))
@@ -838,6 +901,7 @@ namespace cmsc214project
                 if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT")
                 {
                     displayError("Inaasahan ang INTEDYER o PLOWT ngunit ang baryante ay hindi ang inaasahan");
+                    expr.Clear();
                     return false;
                 }
                 else
@@ -849,21 +913,36 @@ namespace cmsc214project
             else if (expType == 'L' && variableExists(cToken))
             {
                 if (getVariableContent(cToken).Item1 == "PLOWT") fFlag = true;
-                if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT" && getVariableContent(cToken).Item1 != "BULYAN")
+                if (getVariableContent(cToken).Item1 != "INTEDYER" && getVariableContent(cToken).Item1 != "PLOWT" && getVariableContent(cToken).Item1 != "BULYAN" && getVariableContent(cToken).Item1 != "KAR" && getVariableContent(cToken).Item1 != "ISTRING")
                 {
                     displayError("Inaasahan ang INTEDYER o PLOWT o BULYAN ngunit ang baryante ay hindi ang inaasahan");
+                    expr.Clear();
                     return false;
                 }
                 else
                 {
-                    expr.Push(getVariableContent(cToken).Item2);
+                    if (getVariableContent(cToken).Item1 == "INTEDYER" || getVariableContent(cToken).Item1 == "PLOWT" || getVariableContent(cToken).Item1 == "BULYAN") expr.Push(getVariableContent(cToken).Item2);
                     return true;
                 }
                 
             }
+            else if (variableExists(cToken))
+            {
+                if (getVariableContent(cToken).Item1 != "BULYAN" && getVariableContent(cToken).Item1 != "KAR" && getVariableContent(cToken).Item1 != "ISTRING")
+                {
+                    displayError("Inaasahan ang ibang bagay ngunit ang iniligay ay \'" + cToken + "\'");
+                    expr.Clear();
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
             else
             {
                 displayError("Inaasahan ang ibang bagay ngunit ang iniligay ay \'" + cToken + "\'");
+                expr.Clear();
                 return false;
             }
             return true;
@@ -875,6 +954,7 @@ namespace cmsc214project
         private void resetValues()
         {
             clearAccumuators();
+            ans = "";
             cToken = "";
             cLine = 0;
             cIndex = 0;
