@@ -33,9 +33,7 @@ namespace cmsc214project
          * (similar to ax in assembly)
         */
         Double acc = 0.0;//store arithmetic values here
-        Double acx = 1.0;
         Boolean abc = false;
-        Boolean onAcc = false;//boolean value to determine if accumulator is being used
 
         public Form1()
         {
@@ -69,7 +67,7 @@ namespace cmsc214project
             }
 
             String[] test_in = {"4","5","*","6","*","IPAKITA",
-                                "4","5","-","IPAKITANA","VAR","IKUHA"};
+                                "4","5","-","5","6","*","+","IPAKITANA"};
             String[] a = {"1","2","-","3","+"};
             lexer();
 
@@ -78,8 +76,9 @@ namespace cmsc214project
             cIndex = 0;
             cToken = "";
 
-            if(error == false) parse();
-            //if (error == false) evaluate_code(test_in);
+            //if(error == false) parse();
+            //if (error == false) 
+			evaluate_code(test_in);
 
            //Display line numbers
             code.Text = "";
@@ -965,8 +964,6 @@ namespace cmsc214project
         {
             abc = false;
             acc = 0.0;
-            acx = 1.0;
-            onAcc = false;
         }
 
         private void evaluate_code(String[] cmd)
@@ -1028,96 +1025,31 @@ namespace cmsc214project
                 //addition operator
                 if (ex == "+")
                 {
-                    onAcc = true;//turn on accumulator
-                    while (s.Count != 0)
-                    {
-                        acc += (Double)s.Pop();
-                    }
+					s.Push(acc=(Double)s.Pop()+(Double)s.Pop());
                 }
 
                 //subtraction operator
                 else if (ex == "-")
                 {
-                    while (s.Count != 0)
-                    {
-                        if (onAcc)
-                            acc -= (Double)s.Pop();
-                        //it is the very first operand
-                        else
-                        {
-                            acc = (Double)s.Pop();
-                            onAcc = true;//turn on accumulator
-                        }
-                    }
+                    s.Push(acc=(Double)s.Pop() - (Double)s.Pop());
                 }
 
                 //multiplication operator
                 else if (ex == "*")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx *= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+                    s.Push(acc=(Double)s.Pop() * (Double)s.Pop());
                 }
 
                 //division operator
                 else if (ex == "/")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx /= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+                    s.Push(acc=(Double)s.Pop() / (Double)s.Pop());
                 }
 
                 //modulo operator
                 else if (ex == "%")
                 {
-                    while (s.Count != 0)
-                    {
-                        acx %= (Double)s.Pop();
-                    }
-
-                    //determine kung paano isasama sa accumulator...
-                    if (onAcc)
-                    {
-                        acc *= acx;
-                    }
-                    //it is the very first operand
-                    else
-                    {
-                        onAcc = true;//turn on accumulator
-                        acc = acx;
-                    }
-
-                    acx = 1;
+					s.Push(acc=(Double)s.Pop() % (Double)s.Pop());
                 }
 
                 /** I/O Functions**/
