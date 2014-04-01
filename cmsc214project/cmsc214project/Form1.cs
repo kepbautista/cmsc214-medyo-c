@@ -1081,11 +1081,18 @@ namespace cmsc214project
 
                 //getting input
                 else if(ex == "IKUHA"){
-					//get value from user
-					String value = readInput();
-					
 					//get variable name from stack
 					String varname = (String)s.Pop();
+					
+					//get type of the variable...
+					Tuple<string,string> t = getVariableContent(varname);
+					String vartype = t.Item1;
+					
+					//pass vartype to Form2
+					f2.setVarType(vartype);
+					
+					//get value from user
+					String value = readInput();
 
                     output.Text += Environment.NewLine+"Variable name: "+varname+" Value: "+value;
 
